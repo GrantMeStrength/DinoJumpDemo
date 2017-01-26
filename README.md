@@ -50,3 +50,4 @@ As a UWP app, it is possible to publish this project to the Windows Store. There
 
 * [Make a simple Windows game with JavaScript](https://www.sitepoint.com/creating-a-simple-windows-8-game-with-javascript-game-basics-createjseaseljs/)
 * [Picking an HTML/JS game engine](https://html5gameengine.com/)
+* [Using CreateJS in your JS based game](https://blogs.msdn.microsoft.com/cbowen/2012/09/19/using-createjs-in-your-javascript-based-windows-8-game/)
