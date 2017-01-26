@@ -1,4 +1,4 @@
-﻿// Dino Game demo
+﻿// Dino Jump Game demo
 // This is a simple game written is JavaScript, with the EaselJS library, to demonstrate
 // how to quickly write a UWP game that is ready for publishing to the Store. The user
 // controls a dinosaur who much jumped over incoming rolling boxes. For.. reasons.
@@ -44,7 +44,6 @@ function init() {
     // which is where the sprite objects are displayed. It's called once, at the start of
     // the app.
 
-
     // Get a reference to the canvas object, and create the stage.
     canvas = document.getElementById("gameCanvas");
     stage = new createjs.Stage("gameCanvas");
@@ -53,7 +52,7 @@ function init() {
     sky = new createjs.Shape();
     sky.graphics.beginFill("DeepSkyBlue");
 
-    // Some grass background texture.
+    // Some grass background shapes.
     grass = new createjs.Shape();
     grass.graphics.beginFill("Green");
  
@@ -78,7 +77,6 @@ function init() {
     loader = new createjs.LoadQueue(false);
     loader.addEventListener("complete", loadingComplete);
     loader.loadManifest(manifest, true, "../images/");
-
 }
 
 
@@ -116,7 +114,7 @@ function loadingComplete() {
     dino_walk = new createjs.Sprite(spriteSheet, "walk");
     dino_stand = new createjs.Sprite(spriteSheet, "stand");
     dino_lying = new createjs.Sprite(spriteSheet, "lying");
-    dino_lying.skewX = -50;
+    dino_lying.skewX = -50; // Make the dino lie down.
     stage.addChild(dino_walk,dino_stand, dino_lying);
 
     // Create an obsticle the dino must jump over.
@@ -126,7 +124,6 @@ function loadingComplete() {
     barrel.x = width + 100;  // Move the obstical to the edge of the screen, and a little further.
     stage.addChild(barrel);
 
- 
     // Now position everything according to the current window dimensions.
     resizeGameWindow();
 
@@ -139,13 +136,12 @@ function loadingComplete() {
     // This code will call the method 'keyboardPressed' is the user presses a key.
     this.document.onkeydown = keyboardPressed;
 
-    // Add mouse clicks
+    // Add support for mouse clicks
     stage.on("stagemousedown", mouseClicked);
 
     // This code makes the app call the method 'resizeGameWindow' if the user resizes the
     // current window.
      window.addEventListener('resize', resizeGameWindow);
-
 }
 
 
@@ -179,7 +175,7 @@ function resizeGameWindow() {
     dino_stand.y = height / 2 - 100;
 
     dino_lying.x = dino_walk.x - 75;
-    dino_lying.y = dino_walk.y + 50;
+    dino_lying.y = dino_walk.y + 75;
 
     barrel.y = height / 2 + 100;
 }
@@ -247,6 +243,7 @@ function gameLoop() {
             {
                 // The game over state.
 
+                // Hide the walking sprite, display the fallen over sprite.
                 dino_walk.visible = false;
                 dino_lying.visible = true;
                 scoreText.text = "Game Over. Score: " + score.toString();
