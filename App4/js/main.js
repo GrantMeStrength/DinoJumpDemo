@@ -1,12 +1,14 @@
 ﻿// Dino Game demo
 // This is a simple game written is JavaScript, with the EaselJS library, to demonstrate
-// how to quickly write a UWP game that is ready for publishing to the Store.
+// how to quickly write a UWP game that is ready for publishing to the Store. The user
+// controls a dinosaur who much jumped over incoming rolling boxes. For.. reasons.
 
-// The canvas and stage are where our sprites are displayed.
+// The canvas and stage are where our sprites are displayed. The canvas is defined in
+// the index.html file, and the stage is an EaselJS object.
 var canvas;
 var stage;
 
-// Used to keep track of current window size.
+// Used to keep track of the current window size.
 var width;
 var height;
 
@@ -31,9 +33,9 @@ GameStateEnum = {
 }
 var GameState = GameStateEnum.Ready;
 
+
 // This method is called to start the game.
 init();
-
 
 
 function init() {
@@ -42,11 +44,11 @@ function init() {
     // which is where the sprite objects are displayed. It's called once, at the start of
     // the app.
 
+    // This code makes the app call the method 'resizeGameWindow' if the user resizes the
+    // current window.
     window.addEventListener('resize', resizeGameWindow);
 
-    width = Windows.UI.ViewManagement.ApplicationView.getForCurrentView().visibleBounds.width;
-    height = Windows.UI.ViewManagement.ApplicationView.getForCurrentView().visibleBounds.height;
-
+    // Get a reference to the canvas object, and create the stage.
     canvas = document.getElementById("gameCanvas");
     stage = new createjs.Stage("gameCanvas");
 
@@ -88,10 +90,8 @@ function init() {
     box = new createjs.Shape();
     box.graphics.beginFill("Brown");
     box.graphics.drawRect(0, 0, 64, 64);
-    box.setBounds(0, 0, 64, 64);
     box.regX = 32;
     box.regY = 32;
-  
     stage.addChild(box);
 
     // Now position everything according to the current window dimensions.
@@ -105,7 +105,9 @@ function init() {
     GameState = GameStateEnum.Ready;
     createjs.Ticker.setFPS(25);
     createjs.Ticker.addEventListener("tick", gameLoop);
-    this.document.onkeydown = keyboard;
+
+    // This code will call the method 'keyboardPressed' is the user presses a key.
+    this.document.onkeydown = keyboardPressed;
 
 }
 
@@ -142,7 +144,6 @@ function resizeGameWindow() {
 }
 
 
-
 function gameLoop() {
 
     // This method is called 25 times a second, and it is where the object positions
@@ -156,6 +157,7 @@ function gameLoop() {
 
         case GameStateEnum.Ready:
             {
+                // This is the 'get ready to play' screen.
                 scoreText.text = "Press Space!";
                 box.x = width + 100;
                 jumping = false;
@@ -168,7 +170,9 @@ function gameLoop() {
 
         case GameStateEnum.Playing:
             {
+                // This is where the main game action happens.
 
+                // Display the score
                 scoreText.text = "Score: " + score.toString();
 
                 // Move the obsticle across the screen, rolling as it goes.
@@ -179,10 +183,10 @@ function gameLoop() {
                     score++;
                 }
 
-                // Handle moving the dino up and down if the player makes it jump.
+                // Handle moving the dino up and down if the player is making it jump.
                 jumpingDino();
 
-                // Very simple check for collision between dino and box 
+                // Very simple check for collision between dino and box.
                 if ((box.x > 220 && box.x < 380)
                     &&
                     (!jumping))
@@ -198,6 +202,8 @@ function gameLoop() {
 
         case GameStateEnum.GameOver:
             {
+                // The game over state.
+
                 scoreText.text = "Game Over. Score: " + score.toString();
                 break;
             }
@@ -214,12 +220,10 @@ function jumpingDino() {
 
     if (jumping) {
         dino_walk.y += dy;
-
         if (dy < 0) {
             dy = dy / 1.1;
             if (dy > -2) dy = 2;
         }
-
         else {
             dy = dy * 1.2;
             if (dino_walk.y > height / 2 - 100) {
@@ -231,25 +235,23 @@ function jumpingDino() {
 }
 
 
-
-function keyboard(event) {
+function keyboardPressed(event) {
 
     // The player has pressed a key, and if they have pressed Space, and the dino
     // isn't currently jumping, make it start jump.
 
     switch (event.keyCode) {
-
-        case 32:
-
-            if (GameState == GameStateEnum.Ready) {
-                GameState = GameStateEnum.Playing;
-            }
+        case 32: // The code for Space
 
             if (GameState == GameStateEnum.Playing) {
                 if (jumping == false) {
                     jumping = true;
                     dy = -12;
                 }
+            }
+
+            if (GameState == GameStateEnum.Ready) {
+                GameState = GameStateEnum.Playing;
             }
 
             if (GameState == GameStateEnum.GameOver) {
