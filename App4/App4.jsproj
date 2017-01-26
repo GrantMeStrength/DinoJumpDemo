@@ -73,6 +73,7 @@
     <Content Include="Licenses\EaselJS License.txt" />
     <Content Include="Licenses\Image License.txt" />
     <Content Include="Licenses\Sample License.txt" />
+    <Content Include="README.md" />
     <None Include="App4_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
