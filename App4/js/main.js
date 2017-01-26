@@ -1,12 +1,12 @@
-﻿// Game demo
-// This is a simple game written is JavaScript, using the EaselJS library, to demonstrate
+﻿// Dino Game demo
+// This is a simple game written is JavaScript, with the EaselJS library, to demonstrate
 // how to quickly write a UWP game that is ready for publishing to the Store.
 
-// The canvas and stage are where our sprites are displayed
+// The canvas and stage are where our sprites are displayed.
 var canvas;
 var stage;
 
-// Used to keep track of current window size
+// Used to keep track of current window size.
 var width;
 var height;
 
@@ -18,23 +18,20 @@ var sky;
 var grass;
 var scoreText;
 
-// Variables used to store state
+// Variables used to store state.
 var dy;
 var score = 0;
 var jumping = false;
 
-// Game state management
-
+// Game state management.
 GameStateEnum = {
     Ready : 0,
     Playing : 1,
     GameOver : 2
 }
-
 var GameState = GameStateEnum.Ready;
 
 // This method is called to start the game.
-
 init();
 
 
@@ -53,18 +50,21 @@ function init() {
     canvas = document.getElementById("gameCanvas");
     stage = new createjs.Stage("gameCanvas");
 
+    // Some sky for the background.
     sky = new createjs.Shape();
     sky.graphics.beginFill("DeepSkyBlue");
     stage.addChild(sky);
 
+    // Some grass background texture.
     grass = new createjs.Shape();
     grass.graphics.beginFill("Green");
     stage.addChild(grass);
 
-    scoreText = new createjs.Text("Score: 00000", "30px Arial", "#ffffff");
+    // Text to display the score and other messages.
+    scoreText = new createjs.Text("Score: 00000", "42px Arial", "#ffffff");
     stage.addChild(scoreText);
 
-    // Set up the animated dino walk using a spritesheet of images
+    // Set up the animated dino walk using a spritesheet of images.
     var data = {
         images: ["images/walkingDino-SpriteSheet.png"],
         frames: { width: 373, height: 256 },
@@ -84,7 +84,7 @@ function init() {
     stage.addChild(dino_walk);
     stage.addChild(dino_stand);
 
-    // Create an object the dino must jump over
+    // Create an obsticle the dino must jump over.
     box = new createjs.Shape();
     box.graphics.beginFill("Brown");
     box.graphics.drawRect(0, 0, 64, 64);
@@ -94,13 +94,14 @@ function init() {
   
     stage.addChild(box);
 
-    // Now position everything according to the current window dimensions
+    // Now position everything according to the current window dimensions.
     resizeGameWindow();
 
+    // Move the obstical to the edge of the screen, and a little further.
     box.x = width + 100;
    
-    // Set up the game loop and keyboard handler
-    // The keyword 'tick' is required to automatically animated the sprite
+    // Set up the game loop and keyboard handler.
+    // The keyword 'tick' is required to automatically animated the sprite.
     GameState = GameStateEnum.Ready;
     createjs.Ticker.setFPS(25);
     createjs.Ticker.addEventListener("tick", gameLoop);
@@ -144,12 +145,14 @@ function resizeGameWindow() {
 
 function gameLoop() {
 
-    // This method is called 25 times a second, and it's where the object positions
+    // This method is called 25 times a second, and it is where the object positions
     // are updated, and the keyboard is checked. It looks at the GameState to decide
-    // what to be doing.
+    // what to do.
 
     switch (GameState)
     {
+        // The game state defines what should be happening at each
+        // stage of the game.
 
         case GameStateEnum.Ready:
             {
@@ -165,9 +168,10 @@ function gameLoop() {
 
         case GameStateEnum.Playing:
             {
+
                 scoreText.text = "Score: " + score.toString();
 
-                // Move the obstical across the screen
+                // Move the obsticle across the screen, rolling as it goes.
                 box.rotation = box.x;
                 box.x -= 8;
                 if (box.x < 0) {
@@ -178,9 +182,12 @@ function gameLoop() {
                 // Handle moving the dino up and down if the player makes it jump.
                 jumpingDino();
 
-                // Check for collision between dino and box
-                if (box.x < 100)
+                // Very simple check for collision between dino and box 
+                if ((box.x > 220 && box.x < 380)
+                    &&
+                    (!jumping))
                 {
+                    box.x = 380;
                     GameState = GameStateEnum.GameOver;
                     dino_stand.visible = true;
                     dino_walk.visible = false;
@@ -191,13 +198,10 @@ function gameLoop() {
 
         case GameStateEnum.GameOver:
             {
-                scoreText.text = "Game Over. You scored: " + score.toString();
+                scoreText.text = "Game Over. Score: " + score.toString();
                 break;
             }
-
     }
-
-   
 
     // Redraw all the object in new positions.
     stage.update();
@@ -206,7 +210,7 @@ function gameLoop() {
 
 function jumpingDino() {
 
-    // Make the dino move up and down the screen.
+    // Make the dino move up and down the screen, if the user has pressed the space bar.
 
     if (jumping) {
         dino_walk.y += dy;
@@ -230,10 +234,11 @@ function jumpingDino() {
 
 function keyboard(event) {
 
-    // The player has pressed a key, if they have pressed Space, and the dino
-    // isn't currently jumping, make it jump.
+    // The player has pressed a key, and if they have pressed Space, and the dino
+    // isn't currently jumping, make it start jump.
 
     switch (event.keyCode) {
+
         case 32:
 
             if (GameState == GameStateEnum.Ready) {
