@@ -5,25 +5,25 @@
 
 // The canvas and stage are where our sprites are displayed. The canvas is defined in
 // the index.html file, and the stage is an EaselJS object.
-var canvas;
-var stage;
+var canvas, stage, loader;
 
 // Used to keep track of the current window size.
-var width;
-var height;
+var width, height;
 
 // Sprite objects
-var dino_walk;
-var dino_stand;
-var box;
-var sky;
-var grass;
+var dino_walk, dino_stand, dino_lying;
+
+// Shapes
+var sky, grass;
+
+// Bitmap objects
+var barrel, cloud = [];
+
+// Text
 var scoreText;
 
 // Variables used to store state.
-var dy;
-var score = 0;
-var jumping = false;
+var dy, score = 0, jumping = false;
 
 // Game state management.
 GameStateEnum = {
@@ -44,9 +44,6 @@ function init() {
     // which is where the sprite objects are displayed. It's called once, at the start of
     // the app.
 
-    // This code makes the app call the method 'resizeGameWindow' if the user resizes the
-    // current window.
-    window.addEventListener('resize', resizeGameWindow);
 
     // Get a reference to the canvas object, and create the stage.
     canvas = document.getElementById("gameCanvas");
@@ -55,26 +52,62 @@ function init() {
     // Some sky for the background.
     sky = new createjs.Shape();
     sky.graphics.beginFill("DeepSkyBlue");
-    stage.addChild(sky);
 
     // Some grass background texture.
     grass = new createjs.Shape();
     grass.graphics.beginFill("Green");
-    stage.addChild(grass);
-
+ 
     // Text to display the score and other messages.
     scoreText = new createjs.Text("Score: 00000", "42px Arial", "#ffffff");
-    stage.addChild(scoreText);
+   
+    // Add these objects to the stage so they are visible.
+    stage.addChild(sky, grass, scoreText);
 
-    // Set up the animated dino walk using a spritesheet of images.
+    // For images that we are loading, we need to do something special and 
+    // create a special handler. EaselJS helps us with this.
+    // First we make a list of all images that should be loaded..
+    manifest = [
+		{ src: "walkingDino-SpriteSheet.png", id: "dino" },
+		{ src: "barrel.png", id: "barrel" },
+		{ src: "fluffy-cloud-small.png", id: "cloud" },
+    ];
+
+    // Now we create a special queue, and finally a handler that is
+    // called when they are loaded. The queue object is provided by preloadjs.
+
+    loader = new createjs.LoadQueue(false);
+    loader.addEventListener("complete", loadingComplete);
+    loader.loadManifest(manifest, true, "../images/");
+
+}
+
+
+function loadingComplete() {
+
+    // Images have been loaded at this point, so we can continue.
+
+    // Create some clouds to drift by
+    for (var i = 0; i < 3; i++) {
+        cloud[i] = new createjs.Bitmap(loader.getResult("cloud"));
+        cloud[i].x = Math.random()*1024;
+        cloud[i].y = 64 + i * 48;
+        stage.addChild(cloud[i]);
+    }
+  
+    // Set up the animated dino walk using a spritesheet of images,
+    // and also a standing still state, and a knocked-over state.
     var data = {
-        images: ["images/walkingDino-SpriteSheet.png"],
+        images: [loader.getResult("dino")],
         frames: { width: 373, height: 256 },
         animations: {
             stand: 0,
+            lying: { 
+                frames: [0, 1],
+                speed: 0.1
+            },
             walk: {
                 frames: [0, 1, 2, 3, 2, 1],
-                speed: 0.5
+                speed: 0.4
             }
         }
     }
@@ -82,34 +115,39 @@ function init() {
     var spriteSheet = new createjs.SpriteSheet(data);
     dino_walk = new createjs.Sprite(spriteSheet, "walk");
     dino_stand = new createjs.Sprite(spriteSheet, "stand");
-    dino_stand.skewX = 45;
-    stage.addChild(dino_walk);
-    stage.addChild(dino_stand);
+    dino_lying = new createjs.Sprite(spriteSheet, "lying");
+    dino_lying.skewX = -50;
+    stage.addChild(dino_walk,dino_stand, dino_lying);
 
     // Create an obsticle the dino must jump over.
-    box = new createjs.Shape();
-    box.graphics.beginFill("Brown");
-    box.graphics.drawRect(0, 0, 64, 64);
-    box.regX = 32;
-    box.regY = 32;
-    stage.addChild(box);
+    barrel = new createjs.Bitmap(loader.getResult("barrel"));
+    barrel.regX = 32;
+    barrel.regY = 32;
+    barrel.x = width + 100;  // Move the obstical to the edge of the screen, and a little further.
+    stage.addChild(barrel);
 
+ 
     // Now position everything according to the current window dimensions.
     resizeGameWindow();
 
-    // Move the obstical to the edge of the screen, and a little further.
-    box.x = width + 100;
-   
     // Set up the game loop and keyboard handler.
     // The keyword 'tick' is required to automatically animated the sprite.
     GameState = GameStateEnum.Ready;
-    createjs.Ticker.setFPS(25);
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
     createjs.Ticker.addEventListener("tick", gameLoop);
 
     // This code will call the method 'keyboardPressed' is the user presses a key.
     this.document.onkeydown = keyboardPressed;
 
+    // Add mouse clicks
+    stage.on("stagemousedown", mouseClicked);
+
+    // This code makes the app call the method 'resizeGameWindow' if the user resizes the
+    // current window.
+     window.addEventListener('resize', resizeGameWindow);
+
 }
+
 
 function resizeGameWindow() {
 
@@ -137,10 +175,13 @@ function resizeGameWindow() {
     dino_walk.x = 100;
     dino_walk.y = height / 2 - 100;
 
-    dino_stand.x = 100;
+    dino_stand.x = dino_walk.x;
     dino_stand.y = height / 2 - 100;
 
-    box.y = height / 2 + 80;
+    dino_lying.x = dino_walk.x - 75;
+    dino_lying.y = dino_walk.y + 50;
+
+    barrel.y = height / 2 + 100;
 }
 
 
@@ -159,12 +200,13 @@ function gameLoop() {
             {
                 // This is the 'get ready to play' screen.
                 scoreText.text = "Press Space!";
-                box.x = width + 100;
+                barrel.x = width + 100;
                 jumping = false;
                 dino_walk.y = height / 2 - 100;
                 score = 0;
-                dino_stand.visible = false;
-                dino_walk.visible = true;
+                dino_stand.visible = true;
+                dino_walk.visible = false;
+                dino_lying.visible = false;
                 break;
             }
 
@@ -172,14 +214,17 @@ function gameLoop() {
             {
                 // This is where the main game action happens.
 
+                dino_stand.visible = false;
+                dino_walk.visible = true;
+            
                 // Display the score
                 scoreText.text = "Score: " + score.toString();
 
                 // Move the obsticle across the screen, rolling as it goes.
-                box.rotation = box.x;
-                box.x -= 8;
-                if (box.x < 0) {
-                    box.x = width + 100;
+                barrel.rotation = barrel.x;
+                barrel.x -= (8 + score); // The barrel moves faster the more points you have!
+                if (barrel.x < 0) {
+                    barrel.x = width + Math.random()*200;
                     score++;
                 }
 
@@ -187,14 +232,12 @@ function gameLoop() {
                 jumpingDino();
 
                 // Very simple check for collision between dino and box.
-                if ((box.x > 220 && box.x < 380)
+                if ((barrel.x > 220 && barrel.x < 380)
                     &&
                     (!jumping))
                 {
-                    box.x = 380;
+                    barrel.x = 380;
                     GameState = GameStateEnum.GameOver;
-                    dino_stand.visible = true;
-                    dino_walk.visible = false;
                 }
 
                 break;
@@ -204,10 +247,15 @@ function gameLoop() {
             {
                 // The game over state.
 
+                dino_walk.visible = false;
+                dino_lying.visible = true;
                 scoreText.text = "Game Over. Score: " + score.toString();
                 break;
             }
     }
+
+    // Move clouds
+    animate_clouds();
 
     // Redraw all the object in new positions.
     stage.update();
@@ -234,31 +282,54 @@ function jumpingDino() {
     }
 }
 
+function mouseClicked()
+{
+    // The mouse click handler. Call the same code that is called if the user
+    // presses the Space Bar.
+
+    userDidSomething();
+}
 
 function keyboardPressed(event) {
 
     // The player has pressed a key, and if they have pressed Space, and the dino
     // isn't currently jumping, make it start jump.
 
-    switch (event.keyCode) {
-        case 32: // The code for Space
+    if (event.keyCode == 32) {  // 32 is the code for the Space Bar
+            userDidSomething();
+    }
+}
 
-            if (GameState == GameStateEnum.Playing) {
-                if (jumping == false) {
-                    jumping = true;
-                    dy = -12;
-                }
-            }
+function userDidSomething()
+{
+    // This is called when the user either clicks with the mouse,
+    // or presses the Space Bar.
 
-            if (GameState == GameStateEnum.Ready) {
-                GameState = GameStateEnum.Playing;
-            }
+    if (GameState == GameStateEnum.Playing) {
+        if (jumping == false) {
+            jumping = true;
+            dy = -12;
+        }
+    }
 
-            if (GameState == GameStateEnum.GameOver) {
-                GameState = GameStateEnum.Ready;
-            }
+    if (GameState == GameStateEnum.Ready) {
+        GameState = GameStateEnum.Playing;
+    }
 
-            break;
+    if (GameState == GameStateEnum.GameOver) {
+        GameState = GameStateEnum.Ready;
+    }
+}
+
+function animate_clouds()
+{
+    // Move the cloud sprites across the sky. If they get to the left edge, 
+    // move them over to the right.
+
+    for (var i = 0; i < 3; i++) {    
+        cloud[i].x = cloud[i].x - (i+1);
+        if (cloud[i].x < -128)
+            cloud[i].x = width + 128;
     }
 }
 

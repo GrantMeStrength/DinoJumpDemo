@@ -58,6 +58,8 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="images\barrel.png" />
+    <Content Include="images\fluffy-cloud-small.png" />
     <Content Include="images\walkingDino-SpriteSheet.png" />
     <Content Include="index.html" />
     <Content Include="images\LockScreenLogo.scale-200.png" />
@@ -69,6 +71,7 @@
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="js\easeljs-0.8.2.min.js" />
     <Content Include="js\main.js" />
+    <Content Include="js\preloadjs-0.6.2.min.js" />
     <Content Include="Licenses\EaselJS License.txt" />
     <Content Include="Licenses\Image License.txt" />
     <Content Include="Licenses\Sample License.txt" />
