@@ -1,11 +1,3 @@
-﻿Microsoft grants you a worldwide, non-exclusive, non-transferrable, revocable, royalty-free license to 
-use the Microsoft designs solely for your purposes of testing the sample application.  You may not copy, 
-modify, reproduce, distribute, publicly display, offer for sale, sell, market, or promote the Microsoft 
-designs. This copyright license in no way grants you a license to any of the Microsoft trademarks contained 
-in the Microsoft designs. Microsoft retains all rights (including but not limited to copyright, trademark, 
-and other design) in the Microsoft designs.
-
-MICROSOFT PROVIDES THE MICROSOFT DESIGNS TO YOU AS-IS, WITHOUT WARRANTY OR ANY KIND, EXPRESS OR IMPLIED, 
-INCLUDING, BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-NONINFRINGEMENT.  IN NO EVENT SHALL MICROSOFT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABLITY, WHETHER 
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE MICROSOFT DESIGNS. 
+Microsoft grants you a worldwide, non-exclusive, non-transferrable, revocable, royalty-free license to use the Microsoft designs in apps and experiments created by you for your personal or non-commercial use.  You may not copy, modify, reproduce, distribute, publicly display, offer for sale, sell, market, or promote the Microsoft designs. This copyright license does not grant you a license to use the Microsoft designs for any commercial purposes (including use in apps submitted to the Windows Store or similar online app store), or any of the Microsoft trademarks contained in the Microsoft designs. Microsoft retains all rights (including but not limited to copyright, trademark, and other design) in the Microsoft designs.
+ 
+MICROSOFT PROVIDES THE MICROSOFT DESIGNS TO YOU AS-IS, WITHOUT WARRANTY OR ANY KIND, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL MICROSOFT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABLITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE MICROSOFT DESIGNS.
