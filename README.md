@@ -37,27 +37,26 @@ You can also download the project as a zip, or use any other standard ways to wo
 
 Once the solution has been loaded into Visual Studio, you'll see several files, including:
 
-* Images/ - a folder containing the various icons required by UWP apps, as well as the game SpriteSheet and some other sprites.
+* Images/ - a folder containing the various icons required by UWP apps, as well as the game's SpriteSheet and some other bitmaps.
 * js/ - a folder containing the JavaScript files. The main.js file is our game, the other files are EaselJS and PreloadJS.
-* Licenses/ - a folder containing various license documents. Please read them.
+* Licenses/ - a folder containing various license documents. Please read them. In a nutshell, please don't sell an app with the Microsoft dinosaur image. It's just for experimenting.
 * index.html - the webpage which contains the canvas object which hosts the game's graphics.
 
 Now you can run the game!
 
-Press **F5** to start the app running. You should see a windows open, and our familar dinosaur standing in an idyllic (if sparse) landscape. We will now examine the app, and explain some important parts - and unlock the game functionality as we go.
+Press **F5** to start the app running. You should see a windows open, and our familar dinosaur standing in an idyllic (if sparse) landscape. We will now examine the app, explain some important parts, and unlock the rest of the features as we go.
 
-**Note:** Something go wrong? First be sure you have installed Visual Studio with web support. You can check by creating a new project - if there is no support for JavaScript, you will need to re-install Visual Studio and check this box:
-
+**Note:** Something go wrong? Be sure you have installed Visual Studio with web support. You can check by creating a new project - if there is no support for JavaScript, you will need to re-install Visual Studio and check the *Microsoft Web Developer Tools* box.
 
 ## Walkthough
 
-If you have started the game with F5, you're probably wondering what is going on. And the answer "not a lot", as a lot of the code is currently commented out. So far, all you'll see is the Dinosaur, and a ineffectual request to press Space. 
+If you have started the game with F5, you're probably wondering what is going on. And the answer "not a lot", as a lot of the code is currently commented out. So far, all you'll see is the dinosaur, and a ineffectual plea to press Space. 
 
-1. Setting the Stage
+### 1. Setting the Stage
 
-If you open and examine **index.html**, you'll see it's almost empty. This file is the default page of our app, and it does only two important things. First, it includes the JavaScript source code for the EaselJS and PreloadJS libraries, and also **main.js**, which is our own source code file.
-Secondly, it defines a &lt;canvas&gt; tag, which is where all our graphics are going to appear. A &lt;canvas&gt; is a standard HTML5 document component. We give it a name (gameCanvas) so our code over in **main.js** can reference it.
-By the way, if you are going to write your own JavaScript game from scratch, you will need to copy the EaselJS and PreloadJS files into your solution, and create a canvas. Then you are good to go.
+If you open and examine **index.html**, you'll see it's almost empty. This file is the default page of our app, and it does only two important things. First, it includes the JavaScript source code for the EaselJS and PreloadJS libraries, and also **main.js** (our own source code file).
+Second, it defines a &lt;canvas&gt; tag, which is where all our graphics are going to appear. A &lt;canvas&gt; is a standard HTML5 document component. We give it a name (gameCanvas) so our code in **main.js** can reference it.
+By the way, if you are going to write your own JavaScript game from scratch, you will need to copy the EaselJS and PreloadJS files into your solution, and then create a canvas object.
 
 EaselJS provides us with a new object called a *stage*. The stage is linked to the canvas, and is used for displaying images and text. Any object we want to be displayed on the stage must first be added, like this:
 
@@ -65,11 +64,45 @@ EaselJS provides us with a new object called a *stage*. The stage is linked to t
     stage.addChild(myObject);
 ```
 
-Speaking of **main.js** you should open it up now.
+You will see that several times in **main.js**
 
-2. Loading the bitmaps
+Speaking of which, now is a good time to open **main.js**.
 
-The first thing we're going to do is add some little fluffy clouds to the stage. Once the game is running, they'll drift across the screen. The image for the cloud is already in the solution, in the Images folder.
+### 2. Loading the bitmaps
+
+Easel provides us with several different types of graphical objects. We can create simple shapes (such as the blue rectangle used for the sky), or bitmaps (such as the clouds we're about to add), text objects, and sprites. Sprites uses a (SpriteSheet)[http://createjs.com/docs/easeljs/classes/SpriteSheet.html]: a single bitmap containing multiple images. For example, we use this SpriteSheet:
+
+![Walking Dino sprite sheet](App4/images/walkingDino-SpriteSheet.png)
+
+And we use the images to make the dinosaur walk, by defining the different frames and how fast they should be animated in this code:
+
+```
+    // Set up the animated dino walk using a spritesheet of images,
+    // and also a standing-still state, and a knocked-over state.
+    var data = {
+        images: [loader.getResult("dino")],
+        frames: { width: 373, height: 256 },
+        animations: {
+            stand: 0,
+            lying: { 
+                frames: [0, 1],
+                speed: 0.1
+            },
+            walk: {
+                frames: [0, 1, 2, 3, 2, 1],
+                speed: 0.4
+            }
+        }
+    }
+
+    var spriteSheet = new createjs.SpriteSheet(data);
+    dino_walk = new createjs.Sprite(spriteSheet, "walk");
+    dino_stand = new createjs.Sprite(spriteSheet, "stand");
+    dino_lying = new createjs.Sprite(spriteSheet, "lying");
+
+```
+
+Right now though, we're going to add some little fluffy clouds to the stage. Once the game is running, they'll drift across the screen. The image for the cloud is already in the solution, in the Images folder.
 
 Look through **main.js** until you find the **init()** function. This is called when the game starts, and it's where we begin to set up all our images.
 
@@ -83,9 +116,18 @@ Find the following code, and remove the comments (\\) from the line that referen
     ];
 ```
 
-JavaScript needs a little help when it comes to loading resources such as images, and so we're using a feature of the CreateJS library that can preload images, called a queue. 
+JavaScript needs a little help when it comes to loading resources such as images, and so we're using a feature of the CreateJS library that can preload images, called a [LoadQueue](http://www.createjs.com/docs/preloadjs/classes/LoadQueue.html). 
 Once the images are available, the queue will tell us they are ready. In order to do that, we first create a new object that lists all our images, and then we create a LoadQueue object.
-You'll see in the following code how it is set-up to call a function called **loadingComplete()** when everything is ready.
+You'll see in the code below how it is set-up to call a function called **loadingComplete()** when everything is ready.
+
+```
+    // Now we create a special queue, and finally a handler that is
+    // called when they are loaded. The queue object is provided by preloadjs.
+
+    loader = new createjs.LoadQueue(false);
+    loader.addEventListener("complete", loadingComplete);
+    loader.loadManifest(manifest, true, "../images/");
+```    
 
 If you look in **loadingComplete()** now, you'll see a commented-out section that creates the clouds. Remove the comments, so it looks like this:
 
@@ -102,10 +144,10 @@ This code creates the cloud objects using our pre-loaded image, sets their locat
 
 Run the app again (press F5) and you'll see our clouds have appeared.
 
-3. Moving the clouds
+### 3. Moving the clouds
 
-Now we're going to make the clouds move. The secret to moving clouds - and moving anything, in fact - is to set-up a function that is repeatedly called multiple times a second. 
-Every time the function is called, it redraws the graphics in a slightly different place.
+Now we're going to make the clouds move. The secret to moving clouds - and moving anything, in fact - is to set-up a [ticker](http://www.createjs.com/docs/easeljs/classes/Ticker.html) function that is repeatedly called multiple times a second. 
+Every time this function is called, it redraws the graphics in a slightly different place.
 
 The code to do that is already in the **main.js** file, provided by the CreateJS library, EaselJS. It looks like this:
 
@@ -118,7 +160,7 @@ The code to do that is already in the **main.js** file, provided by the CreateJS
 
 This code will call a function called **gameLoop()** between 30 and 60 frames a second. The exact speed depends on the speed of your computer.
 
-Look for the **gameLoop()** function now, and down towards the bottom you'll see a function called **animateClouds()**. Change it so that it is not commented out.
+Look for the **gameLoop()** function now, and down towards the bottom you'll see a function called **animateClouds()**. Edit it so that it is not commented out.
 
 ```
     // Move clouds
@@ -127,9 +169,23 @@ Look for the **gameLoop()** function now, and down towards the bottom you'll see
 
 If you look at the defintion of this function, you'll see how it takes at each cloud in turn, and changes its x co-ordinate. If the x-ordinate is off the screen, it is reset to the far right of the screen.
 
+```
+function animate_clouds()
+{
+    // Move the cloud sprites across the sky. If they get to the left edge, 
+    // move them over to the right.
+
+    for (var i = 0; i < 3; i++) {    
+        cloud[i].x = cloud[i].x - (i+1);
+        if (cloud[i].x < -128)
+            cloud[i].x = width + 128;
+    }
+}
+```
+
 If you run the app now, you'll see that the clouds have started drifting. Finally we have motion!
 
-4. Adding keyboard and mouse input
+### 4. Adding keyboard and mouse input
 
 A game that you can't interact with isn't a game. So let's now allow the player to use the keyboard or the mouse. Back in the **loadingComplete()** function, you'll see the following. Remove the comments.
 
@@ -143,15 +199,33 @@ A game that you can't interact with isn't a game. So let's now allow the player 
 
 Now we have two functions being called whenever the player does something. Both the functions call **userDidSomething()**, which decides what the game is currently doing, and what needs to happen next as a result.
 
-Try running the app again, and finally you'll be able to start playing. Press space (or click) to start things happening. You'll see a barrel come rolling towards you: press space or click again at just the right time, and the dinosaur will leap. Time it wrong, and your game is over.
+Try running the app again, and finally you'll be able to start playing. Press space (or click) to start things happening. 
 
+You'll see a barrel come rolling towards you: press space or click again at just the right time, and the dinosaur will leap. Time it wrong, and your game is over.
 
-5. Add resizing support
+The barrel is animated in the same way as the clouds (although it gets faster each time), and we check the position of the dinosaur and the barrel to make sure they haven't collided:
 
-We're almost done here! There's one annoying problem to take care of first, though. When the game is running, try resizing the windows. You'll see that the game quickly becomes messed up, as objects are no longer where they should be.
-We can take care of that by creating a handler for the window resizing event that is generated when the player resizes the window, or if the device is rotated from landscape to portrait.
+```
+ // Very simple check for collision between dino and barrell
+                if ((barrel.x > 220 && barrel.x < 380)
+                    &&
+                    (!jumping))
+                {
+                    barrel.x = 380;
+                    GameState = GameStateEnum.GameOver;
+                }
+```
 
-The code to do this is already present (in fact, we call it when the game first starts, to make sure the default window size works - when a UWP app is launched, you can't be certain what size the window will be, or specify a size).
+The dinosaur isn't jumping and the barrel is close, the code changes the variable that defines the game state (i.e. what the game is currently doing) to a state we've called *GameOver*. As you can imagine, *GameOver* stops the game.
+
+And so the main mechanics of our game are complete.
+
+### 5. Add resizing support
+
+We're almost done here! There's one annoying problem to take care of first, though. When the game is running, try resizing the window. You'll see that the game quickly becomes very messed-up, as objects are no longer where they should be.
+We can take care of that by creating a handler for the window resizing event generated when the player resizes the window, or when the device is rotated from landscape to portrait.
+
+The code to do this is already present (in fact, we call it when the game first starts, to make sure the default window size works, because when a UWP app is launched, you can't be certain what size the window will be).
 
 Just uncomment this line:
 
@@ -160,25 +234,25 @@ Just uncomment this line:
      window.addEventListener('resize', resizeGameWindow);
 ```
 
-If you run the app again, you should be able to resize the window and get better results.
+If you run the app again, you should now be able to resize the window and get better results.
 
 ## Publishing to the Windows Store
 
 As a UWP app, it is possible to publish this project to the Windows Store. There are a few steps to the process.
 
-1. You must be registered as a Windows Developer.
-2. You must test the app using the Store approval tool.
+1. You must be [registered](https://developer.microsoft.com/en-us/store/register) as a Windows Developer.
+2. You must use the App submission [checklist](https://msdn.microsoft.com/windows/uwp/publish/app-submissions).
+3. The app must be submitted for [certification](https://msdn.microsoft.com/windows/uwp/publish/the-app-certification-process).
 
-For more details, see [Publishing your Windows Store app]().
+For more details, see [Publishing your Windows Store app](https://developer.microsoft.com/en-us/store/publish-apps).
 
-## Suggestions
+## Suggestions for other features.
 
 What next? Here are a few suggestions for features to add to your (soon to be) award-winning app.
 
-1. Sound. The CreateJS library includes support for sound.
-2. Gamepad support.
-
-
+1. Sound effects. The CreateJS library includes support for sound, with a library called [SoundJS](http://www.createjs.com/soundjs), so that should be easy.
+2. Gamepad support. There is an [API available](https://gamedevelopment.tutsplus.com/tutorials/using-the-html5-gamepad-api-to-add-controller-support-to-browser-games--cms-21345), so that shouldn't take too long.
+3. Make it a much, much better game! That part is up to you, but there are lots of resources available. 
 
 ## Other links
 
