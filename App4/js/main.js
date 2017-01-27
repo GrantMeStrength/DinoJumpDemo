@@ -39,6 +39,9 @@ var GameState = GameStateEnum.Ready;
 
 
 // This method is called to start the game.
+// It creates the various game objects, adds them to the stage, and kicks off
+// a gameLoop() called by a timer.
+
 init();
 
 
@@ -189,7 +192,9 @@ function gameLoop() {
 
     // This method is called 25 times a second, and it is where the object positions
     // are updated, and the keyboard is checked. It looks at the GameState to decide
-    // what to do.
+    // what to do - i.e. in the Ready state, it only displays a 'press space'
+    // message. In the Playing state the dinosaur is running. In the GameOver state
+    // the dinosaur is lying down.
 
     switch (GameState)
     {
@@ -231,7 +236,7 @@ function gameLoop() {
                 // Handle moving the dino up and down if the player is making it jump.
                 jumpingDino();
 
-                // Very simple check for collision between dino and box.
+                // Very simple check for collision between dino and barrel
                 if ((barrel.x > 220 && barrel.x < 380)
                     &&
                     (!jumping))
