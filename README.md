@@ -206,7 +206,7 @@ You'll see a barrel come rolling towards you: press space or click again at just
 The barrel is animated in the same way as the clouds (although it gets faster each time), and we check the position of the dinosaur and the barrel to make sure they haven't collided:
 
 ```
- // Very simple check for collision between dino and barrell
+ // Very simple check for collision between dino and barrel
                 if ((barrel.x > 220 && barrel.x < 380)
                     &&
                     (!jumping))
@@ -216,11 +216,11 @@ The barrel is animated in the same way as the clouds (although it gets faster ea
                 }
 ```
 
-The dinosaur isn't jumping and the barrel is close, the code changes the variable that defines the game state (i.e. what the game is currently doing) to a state we've called *GameOver*. As you can imagine, *GameOver* stops the game.
+If the dinosaur isn't jumping and the barrel is near by, the code changes the variable that defines the game state (i.e. what the game is currently doing) to a state we've called *GameOver*. As you can imagine, *GameOver* stops the game.
 
 And so the main mechanics of our game are complete.
 
-### 5. Add resizing support
+### 5. Resizing support
 
 We're almost done here! There's one annoying problem to take care of first, though. When the game is running, try resizing the window. You'll see that the game quickly becomes very messed-up, as objects are no longer where they should be.
 We can take care of that by creating a handler for the window resizing event generated when the player resizes the window, or when the device is rotated from landscape to portrait.
@@ -241,7 +241,7 @@ If you run the app again, you should now be able to resize the window and get be
 As a UWP app, it is possible to publish this project to the Windows Store. There are a few steps to the process.
 
 1. You must be [registered](https://developer.microsoft.com/en-us/store/register) as a Windows Developer.
-2. You must use the App submission [checklist](https://msdn.microsoft.com/windows/uwp/publish/app-submissions).
+2. You must use the app submission [checklist](https://msdn.microsoft.com/windows/uwp/publish/app-submissions).
 3. The app must be submitted for [certification](https://msdn.microsoft.com/windows/uwp/publish/the-app-certification-process).
 
 For more details, see [Publishing your Windows Store app](https://developer.microsoft.com/en-us/store/publish-apps).
@@ -252,7 +252,7 @@ What next? Here are a few suggestions for features to add to your (soon to be) a
 
 1. Sound effects. The CreateJS library includes support for sound, with a library called [SoundJS](http://www.createjs.com/soundjs), so that should be easy.
 2. Gamepad support. There is an [API available](https://gamedevelopment.tutsplus.com/tutorials/using-the-html5-gamepad-api-to-add-controller-support-to-browser-games--cms-21345), so that shouldn't take too long.
-3. Make it a much, much better game! That part is up to you, but there are lots of resources available. 
+3. Make it a much, much better game! That part is up to you, but there are lots of resources available online. 
 
 ## Other links
 
