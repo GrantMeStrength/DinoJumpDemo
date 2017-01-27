@@ -3,7 +3,7 @@
 ### A simple UWP game written in JavaScript, with CreateJS
 
 
-![Walking Dino sprite sheet](images/walkingDino-SpriteSheet.png)
+![Walking Dino sprite sheet](App4/images/walkingDino-SpriteSheet.png)
 
 
 ## Introduction
