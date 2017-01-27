@@ -1,7 +1,11 @@
 ﻿// Dino Jump Game demo
+
 // This is a simple game written is JavaScript, with the EaselJS library, to demonstrate
 // how to quickly write a UWP game that is ready for publishing to the Store. The user
 // controls a dinosaur who much jumped over incoming rolling boxes. For.. reasons.
+
+// Some features are currenly commented out. Please see the accompanying README file
+// for guidance.
 
 // The canvas and stage are where our sprites are displayed. The canvas is defined in
 // the index.html file, and the stage is an EaselJS object.
@@ -68,7 +72,7 @@ function init() {
     manifest = [
 		{ src: "walkingDino-SpriteSheet.png", id: "dino" },
 		{ src: "barrel.png", id: "barrel" },
-		{ src: "fluffy-cloud-small.png", id: "cloud" },
+	//	{ src: "fluffy-cloud-small.png", id: "cloud" },
     ];
 
     // Now we create a special queue, and finally a handler that is
@@ -84,14 +88,16 @@ function loadingComplete() {
 
     // Images have been loaded at this point, so we can continue.
 
-    // Create some clouds to drift by
+    // Create some clouds to drift by..
+    /*
     for (var i = 0; i < 3; i++) {
         cloud[i] = new createjs.Bitmap(loader.getResult("cloud"));
         cloud[i].x = Math.random()*1024;
         cloud[i].y = 64 + i * 48;
         stage.addChild(cloud[i]);
     }
-  
+   */
+
     // Set up the animated dino walk using a spritesheet of images,
     // and also a standing still state, and a knocked-over state.
     var data = {
@@ -129,19 +135,17 @@ function loadingComplete() {
 
     // Set up the game loop and keyboard handler.
     // The keyword 'tick' is required to automatically animated the sprite.
-    GameState = GameStateEnum.Ready;
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
     createjs.Ticker.addEventListener("tick", gameLoop);
 
     // This code will call the method 'keyboardPressed' is the user presses a key.
-    this.document.onkeydown = keyboardPressed;
+    // this.document.onkeydown = keyboardPressed;
 
     // Add support for mouse clicks
-    stage.on("stagemousedown", mouseClicked);
+    //stage.on("stagemousedown", mouseClicked);
 
-    // This code makes the app call the method 'resizeGameWindow' if the user resizes the
-    // current window.
-     window.addEventListener('resize', resizeGameWindow);
+    // This code makes the app call the method 'resizeGameWindow' if the user resizes the current window.
+    // window.addEventListener('resize', resizeGameWindow);
 }
 
 
@@ -252,7 +256,7 @@ function gameLoop() {
     }
 
     // Move clouds
-    animate_clouds();
+    //animate_clouds();
 
     // Redraw all the object in new positions.
     stage.update();
