@@ -2,6 +2,8 @@
 
 ## A UWP app written in JavaScript, with CreateJS
 
+![Walking Dino sprite sheet](App4/images/walkingDino-SpriteSheet.png)
+
 The Windows Store is a straightforward way to distribute or sell your apps, and it supports any app written for the UWP (Universal Windows Platform). 
 Often UWP apps are written in C# and XAML, but that is certainly not the only way. To make the point, this app is a very simple game written in JavaScript, making use of the CreateJS library, and demonstrates drawing sprites, creating a game loop, working with the keyboard and adapting to different screen sizes.
 
