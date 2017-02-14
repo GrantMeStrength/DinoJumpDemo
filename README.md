@@ -1,4 +1,15 @@
-# DinoJump
+
+
+*NOTE!*
+
+This sample has been updated and moved to [this repo](https://github.com/Microsoft/Windows-appsample-get-started-js2d)
+
+Please use that version instead, thanks!
+
+----------------------------------------------------------------------------------------
+
+
+## DinoJump
 
 ### A simple UWP game written in JavaScript, with CreateJS
 
